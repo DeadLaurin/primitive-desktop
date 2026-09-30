@@ -1,0 +1,10 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "Primitive",
+  "outputfilename": "Primitive",
+  "wailsjsdir": "./frontend",
+  "author": {
+    "name": "",
+    "email": ""
+  }
+}

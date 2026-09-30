@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Primitive</title>
+    <link href="/main.css" rel="stylesheet"/>
+</head>
+
+<body>
+<div class="app">
+    <header class="topbar">
+        <div class="brand">
+            <div class="brand-mark"></div>
+            <div class="brand-text">
+                <h1>Primitive</h1>
+                <p>Recreate an image with geometric shapes</p>
+            </div>
+        </div>
+        <div id="statusBadge" class="badge badge-idle">Idle</div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <section class="panel">
+                <h2>Target image</h2>
+                <div id="dropzone" class="dropzone">
+                    <img id="targetImg" class="target-img hidden" alt="Target preview"/>
+                    <div id="dropHint" class="drop-hint">
+                        <div class="drop-icon"></div>
+                        <p><strong>Choose an image</strong></p>
+                        <p class="muted">or drop one here</p>
+                    </div>
+                </div>
+                <button id="chooseBtn" class="btn btn-ghost btn-block">Choose image&hellip;</button>
+                <p id="inputMeta" class="meta">No image selected</p>
+            </section>
+
+            <section class="panel">
+                <h2>Settings</h2>
+
+                <div class="field">
+                    <label for="mode">Shape</label>
+                    <select id="mode">
+                        <option value="0">Combo &mdash; mixed shapes</option>
+                        <option value="1" selected>Triangle</option>
+                        <option value="2">Rectangle</option>
+                        <option value="3">Ellipse</option>
+                        <option value="4">Circle</option>
+                        <option value="5">Rotated rectangle</option>
+                        <option value="6">Bezier curves</option>
+                        <option value="7">Rotated ellipse</option>
+                        <option value="8">Polygon</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="count">Shapes</label>
+                    <input id="count" type="number" min="1" max="5000" step="1" value="100"/>
+                    <p class="hint">50&ndash;200 shapes is usually enough</p>
+                </div>
+
+                <div class="field">
+                    <label for="alpha">Alpha <span id="alphaOut" class="value">128</span></label>
+                    <input id="alpha" type="range" min="0" max="255" step="1" value="128"/>
+                    <p class="hint">0 lets the algorithm choose alpha per shape</p>
+                </div>
+
+                <div class="grid-2">
+                    <div class="field">
+                        <label for="inputSize">Input size</label>
+                        <input id="inputSize" type="number" min="16" max="2048" step="1" value="256"/>
+                    </div>
+                    <div class="field">
+                        <label for="outputSize">Output size</label>
+                        <input id="outputSize" type="number" min="32" max="4096" step="1" value="1024"/>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="field">
+                        <label for="repeat">Repeat</label>
+                        <input id="repeat" type="number" min="0" max="20" step="1" value="0"/>
+                    </div>
+                    <div class="field">
+                        <label for="workers">Workers</label>
+                        <input id="workers" type="number" min="0" max="32" step="1" value="0"/>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="background">Background</label>
+                    <input id="background" type="text" placeholder="auto &mdash; average colour" spellcheck="false"/>
+                    <p class="hint">Hex, e.g. <code>ffffff</code> or <code>000000</code></p>
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>Animated GIF</h2>
+
+                <div class="grid-2">
+                    <div class="field">
+                        <label for="gifSize">Size</label>
+                        <select id="gifSize">
+                            <option value="320">320 px</option>
+                            <option value="480" selected>480 px</option>
+                            <option value="720">720 px</option>
+                        </select>
+                    </div>
+                    <div class="field">
+                        <label for="gifFrames">Frames</label>
+                        <select id="gifFrames">
+                            <option value="60">60</option>
+                            <option value="100" selected>100</option>
+                            <option value="160">160</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="gifEngine">Encoder</label>
+                    <select id="gifEngine">
+                        <option value="go">Built in (Go)</option>
+                        <option value="imagemagick">ImageMagick</option>
+                    </select>
+                    <p id="gifEngineHint" class="hint">Checking for ImageMagick&hellip;</p>
+                </div>
+
+                <label class="check">
+                    <input id="gifDither" type="checkbox"/>
+                    <span>Dither &mdash; smoother gradients, larger file</span>
+                </label>
+            </section>
+        </aside>
+
+        <main class="stage">
+            <div class="canvas-card">
+                <div id="canvasWrap" class="canvas-wrap">
+                    <img id="canvasImg" class="canvas-img hidden" alt="Result"/>
+                    <div id="canvasEmpty" class="canvas-empty">
+                        <p><strong>Your picture will appear here</strong></p>
+                        <p class="muted">Pick an image, then press Start</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="statbar">
+                <div class="stat">
+                    <span class="stat-label">Shapes</span>
+                    <span id="statFrame" class="stat-value">&mdash;</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Score</span>
+                    <span id="statScore" class="stat-value">&mdash;</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Speed</span>
+                    <span id="statNps" class="stat-value">&mdash;</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Elapsed</span>
+                    <span id="statElapsed" class="stat-value">&mdash;</span>
+                </div>
+            </div>
+
+            <div class="progress"><div id="progressBar" class="progress-bar"></div></div>
+
+            <div class="actions">
+                <button id="startBtn" class="btn btn-primary" disabled>Start</button>
+                <button id="stopBtn" class="btn btn-danger" disabled>Stop</button>
+                <div class="spacer"></div>
+                <button id="savePngBtn" class="btn btn-ghost" disabled>Save PNG</button>
+                <button id="saveJpgBtn" class="btn btn-ghost" disabled>Save JPG</button>
+                <button id="saveSvgBtn" class="btn btn-ghost" disabled>Save SVG</button>
+                <button id="saveGifBtn" class="btn btn-ghost" disabled>Save GIF</button>
+            </div>
+
+            <p id="toast" class="toast hidden"></p>
+        </main>
+    </div>
+</div>
+<script src="/main.js"></script>
+</body>
+</html>

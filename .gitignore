@@ -1,0 +1,17 @@
+# Compiled binaries
+/bin/
+/primitive-bin
+/primitive-desktop
+/desktop/desktop
+*.test
+
+# Local tooling: the downloaded gh CLI and its auth config live here
+/.tools/
+
+# Scratch output from running the tool by hand
+/out-*.png
+/out-*.svg
+/out-*.gif
+
+# macOS
+.DS_Store

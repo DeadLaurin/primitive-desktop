@@ -1,0 +1,8 @@
+# Build output
+build/bin/
+
+# Wails generates these JS bindings on every build.
+frontend/wailsjs/
+
+# macOS
+.DS_Store
