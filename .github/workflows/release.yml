@@ -1,0 +1,72 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to attach builds to"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS (universal)
+            os: macos-14
+            platform: darwin/universal
+            asset: Primitive-macos-universal.zip
+          - name: Windows (x64)
+            os: windows-latest
+            platform: windows/amd64
+            asset: Primitive-windows-amd64.zip
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.26"
+          cache-dependency-path: |
+            go.sum
+            desktop/go.sum
+
+      - name: Install the Wails CLI
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@latest
+
+      - name: Run the test suite
+        run: |
+          go test ./...
+          cd desktop && go test ./...
+
+      - name: Build the app
+        working-directory: desktop
+        run: wails build -platform ${{ matrix.platform }} -clean
+
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          cd desktop/build/bin
+          # -y keeps symlinks intact inside the .app bundle.
+          zip -r -y "$GITHUB_WORKSPACE/${{ matrix.asset }}" Primitive.app
+
+      - name: Package (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Compress-Archive -Path desktop/build/bin/* -DestinationPath "${{ matrix.asset }}"
+
+      - name: Attach to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          files: ${{ matrix.asset }}
+          fail_on_unmatched_files: true
