@@ -64,8 +64,8 @@ Grab the latest build from the [**releases page**](https://github.com/DeadLaurin
 
 | Platform | File | Notes |
 | --- | --- | --- |
-| macOS (Apple silicon) | `Primitive-<version>-macos-arm64.zip` | Unzip, then drag `Primitive.app` to Applications |
-| Windows (x64) | `Primitive-<version>-windows-amd64.zip` | Unzip and run `Primitive.exe` |
+| macOS (universal) | `Primitive-macos-universal.zip` | Apple silicon **and** Intel. Unzip, then drag `Primitive.app` to Applications |
+| Windows (x64) | `Primitive-windows-amd64.zip` | Unzip and run `Primitive.exe` (needs the WebView2 runtime, preinstalled on Windows 11) |
 
 > [!NOTE]
 > The macOS build is **ad-hoc signed but not notarised**, so Gatekeeper will complain the first time.
